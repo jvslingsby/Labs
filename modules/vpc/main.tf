@@ -4,7 +4,7 @@ provider "aws" {
   region = var.region
 }
 
-#Get all available AZ's in VPC for master region
+#Get all available AZ's in VPC for this region
 #================================================
 data "aws_availability_zones" "azs" {
   state = "available"
@@ -20,7 +20,6 @@ resource "aws_vpc" "tf_vpc" {
     Name = "Terraform-VPC"
   }
 }
-
 
 #Create IGW in us-east-1
 #========================
@@ -61,8 +60,8 @@ resource "aws_route_table_association" "tf_public_assoc" {
   route_table_id     = aws_route_table.tf_public_route.id
 }
 
-#Create SG for allowing TCP/80 & TCP/22
-#=======================================
+#Create SG for allowing TCP/80, TCP/22, TCP/8080, TCP/1233
+#=============================================================
 resource "aws_security_group" "tf_public_sg" {
   name        = "tf_public_sg"
   description = "Used for access to the public instances"
@@ -82,6 +81,24 @@ resource "aws_security_group" "tf_public_sg" {
     description = "allow traffic from TCP/80"
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #HTTP
+  ingress {
+    description = "allow traffic from TCP/8080"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  #HTTP
+  ingress {
+    description = "allow traffic from TCP/1233"
+    from_port   = 1233
+    to_port     = 1233
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
