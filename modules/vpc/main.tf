@@ -4,7 +4,7 @@ provider "aws" {
   region = var.region
 }
 
-#Get all available AZ's in VPC for this region
+#Get all available AZ's in VPC for master region
 #================================================
 data "aws_availability_zones" "azs" {
   state = "available"
@@ -85,7 +85,6 @@ resource "aws_security_group" "tf_public_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   #Outbound internet access
   egress {
