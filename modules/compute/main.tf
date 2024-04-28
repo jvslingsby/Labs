@@ -13,42 +13,34 @@ data "aws_ssm_parameter" "webserver-ami" {
 #Create key-pair for logging into EC2 
 #======================================
 resource "aws_key_pair" "aws-key" {
-  key_name   = "jenkins"
+  key_name   = "k8s"
   public_key = file(var.ssh_key_public)
 }
 
-#Create and bootstrap Jenkins Master Server
-#===========================================
-resource "aws_instance" "jenkins" {
-  instance_type               = "t2.medium"
+#Create K8s Master
+#====================
+resource "aws_instance" "k8s-master" {
+  instance_type               = "t2.micro"
   ami                         = data.aws_ssm_parameter.webserver-ami.value
   tags = {
-  Name = "jenkins_master_tf"
+  Name = "k8s_master_tf"
   }
   key_name                    = aws_key_pair.aws-key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [var.security_group]
-  subnet_id                   = var.subnets
+  subnet_id                   = var.public_subnet_one
+}
 
-  connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key   = file(var.ssh_key_private)
-      host        = self.public_ip
-   }
-
-  # Copy the file from local machine to EC2
-  provisioner "file" {
-    source      = "install_jenkins_and_docker.yaml"
-    destination = "install_jenkins_and_docker.yaml"
+#Create K8s Node
+#====================
+resource "aws_instance" "k8s-node" {
+  instance_type               = "t2.micro"
+  ami                         = data.aws_ssm_parameter.webserver-ami.value
+  tags = {
+  Name = "k8s_node_tf"
   }
-
-  # Execute a script on a remote resource
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum update -y && sudo amazon-linux-extras install ansible2 -y",
-      "sleep 60s",
-      "ansible-playbook install_jenkins_and_docker.yaml"
-    ]
- }
+  key_name                    = aws_key_pair.aws-key.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [var.security_group]
+  subnet_id                   = var.public_subnet_two
 }

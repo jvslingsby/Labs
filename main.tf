@@ -23,8 +23,10 @@ module "vpc" {
 #Deploy Compute Resources
 #============================
 module "compute" {
-  source         = "./modules/compute"
-  subnets        = module.vpc.public_subnets
-  security_group = module.vpc.public_sg
-  subnet_ips     = module.vpc.subnet_ips
+  source            = "./modules/compute"
+  public_subnet_one = module.vpc.public_subnets_one
+  public_subnet_two = module.vpc.public_subnets_two
+  security_group    = module.vpc.public_sg
+  subnet_ip_one     = module.vpc.subnet_ips_one
+  subnet_ip_two     = module.vpc.subnet_ips_two
 }

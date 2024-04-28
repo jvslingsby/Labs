@@ -7,16 +7,20 @@ variable "region" {
 
 variable "ssh_key_public" {
   type    = string
+  #Replace this with the location of you public key .pub
   default = "C:\\Users\\JV Slingsby\\.ssh\\id_rsa.pub"
 }
 
 variable "ssh_key_private" {
   type    = string
+  #Replace this with the location of you private key
   default = "C:\\Users\\JV Slingsby\\.ssh\\id_rsa"
 }
 
-variable "subnet_ips" {}
+variable "public_subnet_one" {}
+variable "public_subnet_two" {}
 
 variable "security_group" {}
 
-variable "subnets" {}
+variable "subnet_ip_one" {}
+variable "subnet_ip_two" {}
