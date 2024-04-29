@@ -78,24 +78,64 @@ resource "aws_route_table_association" "tf_public2_assoc" {
   route_table_id = aws_route_table.tf_public_route.id
 }
 
-
 #Create SG for allowing all ports
 #===================================
 resource "aws_security_group" "tf_public_sg" {
   name        = "tf_public_sg"
   description = "Used for access to the public instances"
   vpc_id      = aws_vpc.tf_vpc.id
-  #Inbound internet access
-  #SSH
 
-  #HTTP
+  #Kubernetes All
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  #Kubernetes API Server, etcd
+  ingress {
+    from_port   = 2379
+    to_port     = 2380
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #Kubelet API - Self, Control plane
+  ingress {
+    from_port   = 10250
+    to_port     = 10252
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #NodePort Service - All
+  ingress {
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
   #Outbound internet access
   egress {
     from_port   = 0
@@ -105,5 +145,5 @@ resource "aws_security_group" "tf_public_sg" {
   }
   tags = {
     Name = "Terraform-SecurityGroup"
-  }
+ }
 }

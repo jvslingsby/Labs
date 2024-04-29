@@ -9,7 +9,6 @@ output "public_subnets_two" {
   value = aws_subnet.tf_public_subnet2.id
 }
 
-
 output "public_sg" {
   value = aws_security_group.tf_public_sg.id
 }
